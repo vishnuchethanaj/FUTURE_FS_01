@@ -75,4 +75,41 @@
   .container-x { @apply mx-auto max-w-6xl px-6; }
   .reveal { opacity: 0; transform: translateY(16px); transition: opacity .7s ease, transform .7s ease; }
   .reveal.is-visible { opacity: 1; transform: none; }
+  .bg-grid-pattern {
+    background-image:
+      linear-gradient(rgba(15, 23, 42, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(15, 23, 42, 0.04) 1px, transparent 1px);
+    background-size: 72px 72px;
+  }
+
+  html.dark .bg-grid-pattern {
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  }
+
+  html.dark {
+    color-scheme: dark;
+    --background: oklch(0.09 0.04 264);
+    --surface: oklch(0.12 0.03 260);
+    --foreground: oklch(0.94 0.01 255);
+    --card: oklch(0.12 0.03 260);
+    --card-foreground: oklch(0.96 0.02 260);
+    --popover: oklch(0.12 0.03 260);
+    --popover-foreground: oklch(0.94 0.01 255);
+    --primary: oklch(0.62 0.18 240);
+    --primary-foreground: oklch(0.98 0 0);
+    --secondary: oklch(0.22 0.07 280);
+    --secondary-foreground: oklch(0.96 0.01 255);
+    --muted: oklch(0.22 0.05 270);
+    --muted-foreground: oklch(0.75 0.02 255);
+    --accent: oklch(0.15 0.08 240);
+    --accent-foreground: oklch(0.96 0.01 255);
+    --destructive: oklch(0.55 0.22 26);
+    --destructive-foreground: oklch(0.98 0 0);
+    --border: oklch(0.24 0.03 260);
+    --input: oklch(0.18 0.02 260);
+    --ring: oklch(0.64 0.18 240);
+  }
 }
+

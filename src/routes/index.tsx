@@ -1,16 +1,19 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Code2, Database, Github, Linkedin, Mail, ServerCog, Sparkles, Wrench } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
+import profileImage from "../image.png";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Vishnu Chethanaj — Full Stack Web Developer" },
+      { title: "VishnuChethana — Full Stack Web Developer" },
       {
         name: "description",
         content:
-          "Portfolio of Vishnu Chethanaj, Full Stack Web Developer. Projects, skills, internship experience, and contact.",
+          "Portfolio of VishnuChethana, Full Stack Web Developer. Projects, skills, internship experience, and contact.",
       },
-      { property: "og:title", content: "Vishnu Chethanaj — Full Stack Web Developer" },
+      { property: "og:title", content: "VishnuChethana — Full Stack Web Developer" },
       { property: "og:description", content: "Portfolio showcasing projects, skills and experience." },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "/" },
@@ -21,6 +24,9 @@ export const Route = createFileRoute("/")({
 });
 
 const GITHUB_USER = "vishnuchethanaj";
+const LINKEDIN_URL = "https://www.linkedin.com/in/vishnuchethanajogiparthi/";
+const EMAIL = "vishnuchethana.j@gmail.com";
+const PROFILE_IMAGE = profileImage;
 
 type Repo = {
   id: number;
@@ -44,6 +50,55 @@ const FALLBACK_REPOS: Repo[] = [
   { id: 6, name: "ml-image-classifier", description: "Image classifier using transfer learning in Python.", html_url: `https://github.com/${GITHUB_USER}`, homepage: null, language: "Python", stargazers_count: 0, fork: false, updated_at: "" },
 ];
 
+const normalizeRepoName = (value: string) => value.toLowerCase().replace(/[^a-z0-9]/g, "");
+
+const PINNED_PROJECTS: Repo[] = [
+  {
+    id: 1001,
+    name: "Online-Shopping-Cart",
+    description: "Online shopping cart project with a deployed live demo.",
+    html_url: "https://github.com/vishnuchethanaj/Online-Shopping-Cart",
+    homepage: "https://shopkart-nlya.onrender.com/",
+    language: "JavaScript",
+    stargazers_count: 0,
+    fork: false,
+    updated_at: "",
+  },
+  {
+    id: 1002,
+    name: "CCTV",
+    description: "CCTV monitoring project with a deployed live demo.",
+    html_url: "https://github.com/vishnuchethanaj/CCTV",
+    homepage: "https://cctv-1-vn1h.onrender.com/",
+    language: "Python",
+    stargazers_count: 0,
+    fork: false,
+    updated_at: "",
+  },
+  {
+    id: 1003,
+    name: "Spam_Email_Detector",
+    description: "Spam email detector with a deployed live demo.",
+    html_url: "https://github.com/vishnuchethanaj/Spam_Email_Detector",
+    homepage: "https://spam-email-detectorr.vercel.app/",
+    language: "Python",
+    stargazers_count: 0,
+    fork: false,
+    updated_at: "",
+  },
+  {
+    id: 1004,
+    name: "Mern-Stack-Project-Food-Donation",
+    description: "Food donation platform built with MERN, deployed and demo-ready.",
+    html_url: "https://github.com/vishnuchethanaj/Mern-Stack-Project-Food-Donation",
+    homepage: "https://mern-stack-project-food-donation.onrender.com/",
+    language: "JavaScript",
+    stargazers_count: 0,
+    fork: false,
+    updated_at: "",
+  },
+];
+
 const NAV = [
   { id: "home", label: "Home" },
   { id: "about", label: "About" },
@@ -54,7 +109,7 @@ const NAV = [
   { id: "contact", label: "Contact" },
 ];
 
-function classifyCategory(repo: Repo): "fullstack" | "ai" | "academic" {
+function classifyCategory(repo: Repo): "fullstack" | "ai" | "mern stack" {
   const l = (repo.language || "").toLowerCase();
   const text = `${repo.name} ${repo.description ?? ""}`.toLowerCase();
   if (text.includes("ai") || text.includes("ml") || l === "python") return "ai";
@@ -64,7 +119,7 @@ function classifyCategory(repo: Repo): "fullstack" | "ai" | "academic" {
 
 function Portfolio() {
   const [repos, setRepos] = useState<Repo[]>(FALLBACK_REPOS);
-  const [filter, setFilter] = useState<"all" | "fullstack" | "ai" | "academic">("all");
+  const [filter, setFilter] = useState<"all" | "fullstack" | "ai" | "mern stack">("all");
   const [active, setActive] = useState("home");
   const [menuOpen, setMenuOpen] = useState(false);
   const [showTop, setShowTop] = useState(false);
@@ -75,12 +130,53 @@ function Portfolio() {
   // GitHub fetch
   useEffect(() => {
     let cancelled = false;
-    fetch(`https://api.github.com/users/${GITHUB_USER}/repos?sort=updated&per_page=12`)
+    const projectLinks: Record<string, { github: string; render?: string }> = {
+      autocorrectionai: {
+        github: "https://github.com/vishnuchethanaj/Autocorrection-AI",
+        render: "https://autocorrection-ai.onrender.com/",
+      },
+      dealnestcoupons: {
+        github: "https://github.com/vishnuchethanaj/Dealnest-Coupons",
+        render: "https://dealnest-frontend.onrender.com/",
+      },
+      heartdiseaseprediction: {
+        github: "https://github.com/vishnuchethanaj/Heart_Disease_Prediction",
+        render: "https://heart-disease-prediction-2-lff4.onrender.com/",
+      },
+      onlineshoppingcart: {
+        github: "https://github.com/vishnuchethanaj/Online-Shopping-Cart",
+        render: "https://shopkart-nlya.onrender.com/",
+      },
+      cctv: {
+        github: "https://github.com/vishnuchethanaj/CCTV",
+        render: "https://cctv-1-vn1h.onrender.com/",
+      },
+      spamemaildetector: {
+        github: "https://github.com/vishnuchethanaj/Spam_Email_Detector",
+        render: "https://spam-email-detectorr.vercel.app/",
+      },
+      mernstackprojectfooddonation: {
+        github: "https://github.com/vishnuchethanaj/Mern-Stack-Project-Food-Donation",
+        render: "https://mern-stack-project-food-donation.onrender.com/",
+      }
+    };
+    fetch(`https://api.github.com/users/${GITHUB_USER}/repos?sort=updated&per_page=100`)
       .then((r) => (r.ok ? r.json() : Promise.reject()))
       .then((data: Repo[]) => {
         if (cancelled) return;
-        const filtered = data.filter((r) => !r.fork);
-        if (filtered.length) setRepos(filtered);
+        const enriched = data
+          .filter((r) => !r.fork)
+          .map((r) => {
+            const link = projectLinks[normalizeRepoName(r.name)];
+            return {
+              ...r,
+              html_url: link?.github || r.html_url,
+              homepage: link?.render || r.homepage,
+            };
+          });
+        const existingNames = new Set(enriched.map((r) => normalizeRepoName(r.name)));
+        const pinned = PINNED_PROJECTS.filter((project) => !existingNames.has(normalizeRepoName(project.name)));
+        setRepos([...pinned, ...enriched]);
       })
       .catch(() => {});
     return () => { cancelled = true; };
@@ -132,16 +228,57 @@ function Portfolio() {
     const base = ["HTML", "CSS", "JavaScript", "React.js", "Node.js", "Express", "Python", "Flask", "MongoDB", "MySQL", "Git", "GitHub"];
     const merged = Array.from(new Set([...base, ...langs]));
     return {
-      Frontend: merged.filter((s) => ["HTML", "CSS", "JavaScript", "TypeScript", "React.js", "React"].includes(s)),
+      Frontend: merged.filter((s) => ["HTML", "CSS", "JavaScript", "React.js", "React"].includes(s)),
       Backend: merged.filter((s) => ["Node.js", "Express", "Python", "Flask"].includes(s)),
-      Database: merged.filter((s) => ["MongoDB", "MySQL", "PostgreSQL"].includes(s)),
-      Tools: ["Git", "GitHub", "VS Code", "Render", "Vercel"],
+      Database: merged.filter((s) => ["MongoDB", "MySQL", ].includes(s)),
+      Tools: ["Git", "GitHub", "VS Code", "Render"],
     };
   }, [repos]);
 
+  const skillCards = useMemo(() => ([
+    {
+      label: "Frontend",
+      description: "Interfaces, layout systems, and interactive UI built for desktop and mobile.",
+      icon: Code2,
+      accent: "from-blue-500/10 via-white to-sky-50",
+      emoji: "UI",
+      items: skills.Frontend,
+      highlight: "Responsive web apps",
+    },
+    {
+      label: "Backend",
+      description: "Application logic, APIs, and server-side flows that keep projects running.",
+      icon: ServerCog,
+      accent: "from-emerald-500/10 via-white to-green-50",
+      emoji: "API",
+      items: skills.Backend,
+      highlight: "APIs and services",
+    },
+    {
+      label: "Database",
+      description: "Data modeling and storage that supports clean, reliable app behavior.",
+      icon: Database,
+      accent: "from-amber-500/10 via-white to-orange-50",
+      emoji: "DB",
+      items: skills.Database,
+      highlight: "Data and persistence",
+    },
+    {
+      label: "Tools",
+      description: "The workflow stack I use to ship, track, and deploy projects efficiently.",
+      icon: Wrench,
+      accent: "from-violet-500/10 via-white to-fuchsia-50",
+      emoji: "OPS",
+      items: skills.Tools,
+      highlight: "Build and deploy",
+    },
+  ]), [skills]);
+
   const filteredRepos = useMemo(() => {
-    if (filter === "all") return repos;
-    return repos.filter((r) => classifyCategory(r) === filter);
+    const excluded = ["it", "Lost-Found"];
+    const filtered = repos.filter((r) => !excluded.includes(r.name) && Boolean(r.homepage));
+    if (filter === "all") return filtered;
+    return filtered.filter((r) => classifyCategory(r) === filter);
   }, [repos, filter]);
 
   const handleScroll = (id: string) => {
@@ -160,34 +297,41 @@ function Portfolio() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="relative min-h-screen bg-background text-foreground">
+      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-sky-50/60 via-white to-white" />
+        <div className="absolute inset-0 bg-grid-pattern opacity-60" />
+        <div className="absolute left-10 top-20 h-72 w-72 rounded-full bg-sky-400/20 blur-3xl" />
+        <div className="absolute right-10 top-56 h-56 w-56 rounded-full bg-blue-300/15 blur-3xl" />
+        <div className="absolute left-1/2 top-[22rem] h-80 w-80 -translate-x-1/2 rounded-full bg-cyan-200/10 blur-3xl" />
+      </div>
       {/* NAV */}
-      <header className="fixed top-0 inset-x-0 z-50 border-b border-border/70 bg-white/80 backdrop-blur-md">
+      <header className="fixed top-0 inset-x-0 z-50 border-b border-border/10 bg-white/70 backdrop-blur-xl shadow-soft">
         <div className="container-x flex h-16 items-center justify-between">
-          <a href="#home" onClick={(e) => { e.preventDefault(); handleScroll("home"); }} className="font-semibold tracking-tight">
-            Vishnu<span className="text-primary">.</span>
+          <a href="#home" onClick={(e) => { e.preventDefault(); handleScroll("home"); }} className="font-semibold tracking-tight text-foreground transition hover:text-primary">
+            Vishnuchethana <span className="text-primary">!</span>
           </a>
           <nav className="hidden md:flex items-center gap-1">
             {NAV.map((n) => (
               <a key={n.id} href={`#${n.id}`}
                 onClick={(e) => { e.preventDefault(); handleScroll(n.id); }}
-                className={`px-3 py-2 text-sm rounded-md transition-colors ${active === n.id ? "text-primary bg-accent" : "text-muted-foreground hover:text-foreground"}`}>
+                className={`px-2.5 py-1.5 text-sm rounded-lg transition duration-200 ease-out ${active === n.id ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground hover:bg-accent/70"}`}>
                 {n.label}
               </a>
             ))}
           </nav>
-          <button className="md:hidden p-2 rounded-md hover:bg-accent" onClick={() => setMenuOpen((v) => !v)} aria-label="Menu">
+          <button className="md:hidden p-1.5 rounded-lg transition duration-200 ease-out hover:bg-accent/70" onClick={() => setMenuOpen((v) => !v)} aria-label="Menu">
             <span className="block w-5 h-0.5 bg-foreground mb-1" />
             <span className="block w-5 h-0.5 bg-foreground mb-1" />
             <span className="block w-5 h-0.5 bg-foreground" />
           </button>
         </div>
         {menuOpen && (
-          <div className="md:hidden border-t border-border bg-white">
+          <div className="md:hidden border-t border-border/10 bg-white/90 backdrop-blur-lg">
             <div className="container-x py-2 flex flex-col">
               {NAV.map((n) => (
                 <a key={n.id} href={`#${n.id}`} onClick={(e) => { e.preventDefault(); handleScroll(n.id); }}
-                  className={`py-2 text-sm ${active === n.id ? "text-primary" : "text-muted-foreground"}`}>
+                  className={`py-2 px-2 text-sm rounded-lg transition duration-200 ease-out ${active === n.id ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground hover:bg-accent/70"}`}>
                   {n.label}
                 </a>
               ))}
@@ -201,13 +345,16 @@ function Portfolio() {
         <div className="container-x grid md:grid-cols-[1.4fr_1fr] gap-12 items-center">
           <div className="reveal">
             <p className="text-sm font-medium text-primary mb-4">Hello, I'm</p>
-            <h1 className="text-5xl md:text-6xl font-bold tracking-tight leading-tight">Vishnu Chethanaj</h1>
+            <h1 className="text-5xl md:text-6xl font-bold tracking-tight leading-tight">JOGIPARTHI VISHNUCHTHANA</h1>
             <h2 className="mt-4 text-2xl md:text-3xl text-muted-foreground font-medium">
               <span ref={typedRef} />
               <span className="inline-block w-[2px] h-7 bg-primary align-middle ml-1 animate-pulse" />
             </h2>
             <p className="mt-6 max-w-xl text-muted-foreground leading-relaxed">
-              B.Tech student passionate about Full Stack Development and AI. I build clean, modern web experiences and ship real projects on GitHub.
+              B.Tech Computer Science Student specializing in
+Full Stack Development and    AI-powered applications.
+Passionate about building scalable web solutions,
+modern user experiences, and real-world projects.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <a href="#projects" onClick={(e) => { e.preventDefault(); handleScroll("projects"); }}
@@ -223,17 +370,28 @@ function Portfolio() {
                 Download Resume
               </a>
             </div>
-            <div className="mt-10 flex gap-6 text-sm text-muted-foreground">
-              <a href={`https://github.com/${GITHUB_USER}`} target="_blank" rel="noreferrer" className="hover:text-primary">GitHub</a>
-              <a href="https://www.linkedin.com/" target="_blank" rel="noreferrer" className="hover:text-primary">LinkedIn</a>
-              <a href="mailto:vishnu@example.com" className="hover:text-primary">Email</a>
+            <div className="mt-10 flex gap-6 text-sm text-muted-foreground items-center">
+              <a href={`https://github.com/${GITHUB_USER}`} target="_blank" rel="noreferrer" className="flex items-center gap-2 hover:text-primary">
+                <Github size={16} /> <span>GitHub</span>
+              </a>
+              <a href={LINKEDIN_URL} target="_blank" rel="noreferrer" className="flex items-center gap-2 hover:text-primary">
+                <Linkedin size={16} /> <span>LinkedIn</span>
+              </a>
+              <a href={`mailto:${EMAIL}`} className="flex items-center gap-2 hover:text-primary">
+                <Mail size={16} /> <span>Email</span>
+              </a>
             </div>
           </div>
           <div className="reveal flex justify-center md:justify-end">
             <div className="relative">
               <div className="absolute inset-0 rounded-full bg-primary/10 blur-2xl" />
-              <div className="relative h-64 w-64 rounded-full bg-gradient-to-br from-accent to-white border border-border shadow-card flex items-center justify-center text-6xl font-semibold text-primary">
-                VC
+              <div className="relative h-80 w-80 md:h-96 md:w-96 overflow-hidden rounded-full border border-border shadow-card bg-white">
+                <img
+                  src={PROFILE_IMAGE}
+                  alt="Profile photo of Vishnu Chethana"
+                  className="h-full w-full object-cover"
+                />
+                <div className="absolute inset-0 rounded-full ring-4 ring-primary/20 pointer-events-none" />
               </div>
             </div>
           </div>
@@ -243,9 +401,9 @@ function Portfolio() {
       {/* STATS */}
       <section className="py-12 bg-surface border-y border-border">
         <div className="container-x grid grid-cols-2 md:grid-cols-4 gap-8">
-          <Stat label="Projects Completed" value={Math.max(repos.length, 6)} />
-          <Stat label="Technologies Learned" value={15} />
-          <Stat label="Months Internship" value={3} />
+          <Stat label="Projects Completed" value={(repos.length,9)} />
+          <Stat label="Technologies Learned" value={9} />
+          <Stat label="Months Internship" value={2} />
           <Stat label="GitHub Repositories" value={repos.length} />
         </div>
       </section>
@@ -255,18 +413,18 @@ function Portfolio() {
         <div className="container-x grid md:grid-cols-2 gap-12 items-start">
           <div className="reveal">
             <SectionLabel>About</SectionLabel>
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mt-3">A bit about me</h2>
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mt-3">About Me</h2>
           </div>
           <div className="reveal text-muted-foreground leading-relaxed space-y-4">
             <p>
-              I'm a B.Tech student and aspiring Full Stack Developer with a strong interest in building practical web applications and exploring AI. I enjoy turning ideas into real, shippable products.
+              I am a B.Tech Computer Science student at KLH University with a strong interest in Full Stack Development and Artificial Intelligence.
             </p>
             <p>
-              My focus areas are modern web development, problem solving, and contributing to open source through GitHub. I'm currently interning with Future Interns as a Full Stack Web Development Intern.
+             Over the past year, I have built multiple web applications including AI-based tools, e-commerce projects, and data-driven applications using HTML, CSS, JavaScript, React, Python, Flask, and MySQL.
             </p>
             <p>
-              Goal: become a strong full stack engineer who can design, build, and deploy quality software end-to-end.
-            </p>
+              I enjoy building projects, learning new technologies, and improving my development skills through practical experience. My goal is to grow as a developer and build useful software.
+            </p>  
           </div>
         </div>
       </section>
@@ -279,19 +437,60 @@ function Portfolio() {
             <h2 className="text-3xl md:text-4xl font-bold tracking-tight mt-3">Technologies I work with</h2>
             <p className="text-muted-foreground mt-3">Auto-merged from GitHub language data and my core stack.</p>
           </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {Object.entries(skills).map(([group, items]) => (
-              <div key={group} className="reveal rounded-xl bg-white border border-border p-6 shadow-soft hover:shadow-card transition">
-                <h3 className="font-semibold mb-4">{group}</h3>
-                <ul className="space-y-2">
-                  {items.map((s) => (
-                    <li key={s} className="flex items-center text-sm text-muted-foreground">
-                      <span className="h-1.5 w-1.5 rounded-full bg-primary mr-2.5" />{s}
-                    </li>
-                  ))}
-                </ul>
+          <div className="grid lg:grid-cols-[1.1fr_1.9fr] gap-6 items-stretch">
+            <div className="reveal rounded-2xl border border-border bg-white p-8 shadow-soft relative overflow-hidden">
+              <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary via-sky-400 to-emerald-400" />
+              <div className="flex items-center gap-3 mb-5">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-card">
+                  <Sparkles className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-xs font-semibold tracking-[0.3em] uppercase text-primary">Skill snapshot</p>
+                  <h3 className="text-xl font-semibold mt-1">What I actually build with</h3>
+                </div>
               </div>
-            ))}
+              <p className="text-sm leading-6 text-muted-foreground">
+                These are the tools and technologies that show up in my portfolio work, internship tasks, and day-to-day development.
+              </p>
+              <div className="mt-8 grid grid-cols-2 gap-3">
+                <div className="rounded-2xl border border-border bg-surface p-4">
+                  <p className="text-2xl font-bold text-foreground">4</p>
+                  <p className="text-xs uppercase tracking-[0.24em] text-muted-foreground mt-1">Core areas</p>
+                </div>
+                <div className="rounded-2xl border border-border bg-surface p-4">
+                  <p className="text-2xl font-bold text-foreground">15+</p>
+                  <p className="text-xs uppercase tracking-[0.24em] text-muted-foreground mt-1">Tools tracked</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid sm:grid-cols-2 gap-5">
+              {skillCards.map(({ label, description, icon: Icon, accent, emoji, items, highlight }) => (
+                <article key={label} className="reveal group rounded-2xl border border-border bg-white p-6 shadow-soft hover:shadow-card transition overflow-hidden relative">
+                  <div className={`absolute inset-0 bg-gradient-to-br ${accent} opacity-80`} />
+                  <div className="relative">
+                    <div className="flex items-center justify-between gap-4 mb-4">
+                      <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-background border border-border shadow-soft">
+                        <Icon className="h-5 w-5 text-primary" />
+                      </div>
+                      <span className="text-[10px] font-semibold tracking-[0.28em] uppercase text-muted-foreground bg-white/80 px-2.5 py-1 rounded-full border border-border">
+                        {emoji}
+                      </span>
+                    </div>
+                    <h3 className="font-semibold text-lg">{label}</h3>
+                    <p className="text-sm text-muted-foreground mt-2 leading-6">{description}</p>
+                    <p className="mt-4 text-xs font-semibold uppercase tracking-[0.24em] text-primary">{highlight}</p>
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      {items.map((s) => (
+                        <span key={s} className="inline-flex items-center rounded-full border border-border bg-white/90 px-3 py-1.5 text-xs font-medium text-foreground shadow-sm">
+                          {s}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -305,18 +504,18 @@ function Portfolio() {
             <p className="text-muted-foreground mt-3">Auto-loaded from my GitHub profile.</p>
           </div>
           <div className="reveal flex flex-wrap justify-center gap-2 mb-10">
-            {(["all", "fullstack", "ai", "academic"] as const).map((f) => (
+            {(["all", "fullstack", "ai"] as const).map((f) => (
               <button key={f} onClick={() => setFilter(f)}
                 className={`px-4 py-1.5 text-sm rounded-full border transition ${filter === f ? "bg-primary text-primary-foreground border-primary" : "bg-white border-border text-muted-foreground hover:text-foreground"}`}>
-                {f === "all" ? "All Projects" : f === "fullstack" ? "Full Stack" : f === "ai" ? "AI Projects" : "Academic"}
+                {f === "all" ? "All Projects" : f === "fullstack" ? "Full Stack" : f === "ai" ? "AI Projects" : "All Projects"}
               </button>
             ))}
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredRepos.map((r) => (
               <article key={r.id} className="reveal group rounded-xl bg-white border border-border p-6 shadow-soft hover:shadow-card hover:-translate-y-0.5 transition flex flex-col">
-                <div className="h-32 -mx-6 -mt-6 mb-5 rounded-t-xl bg-gradient-to-br from-accent via-white to-surface border-b border-border flex items-center justify-center text-3xl font-bold text-primary/80">
-                  {r.name.slice(0, 2).toUpperCase()}
+                <div className="h-32 -mx-6 -mt-6 mb-5 rounded-t-xl bg-gradient-to-br from-accent via-white to-surface border-b border-border flex items-center justify-center text-2xl font-bold text-foreground px-4 text-center">
+                  <span className="truncate">{r.name}</span>
                 </div>
                 <h3 className="font-semibold text-lg group-hover:text-primary transition">{r.name}</h3>
                 <p className="text-sm text-muted-foreground mt-2 line-clamp-3 flex-1">
@@ -329,10 +528,10 @@ function Portfolio() {
                 <div className="mt-5 flex gap-2">
                   <a href={r.html_url} target="_blank" rel="noreferrer"
                     className="flex-1 text-center text-sm px-3 py-2 rounded-md border border-border hover:bg-accent transition">GitHub</a>
-                  {r.homepage && (
-                    <a href={r.homepage} target="_blank" rel="noreferrer"
-                      className="flex-1 text-center text-sm px-3 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition">Live Demo</a>
-                  )}
+                  <a href={LINKEDIN_URL} target="_blank" rel="noreferrer"
+                    className="flex-1 text-center text-sm px-3 py-2 rounded-md border border-border hover:bg-accent transition">LinkedIn</a>
+                  <a href={`mailto:${EMAIL}?subject=${encodeURIComponent(`About ${r.name}`)}`}
+                    className="flex-1 text-center text-sm px-3 py-2 rounded-md border border-border hover:bg-accent transition">Email</a>
                 </div>
               </article>
             ))}
@@ -355,19 +554,97 @@ function Portfolio() {
               points={[
                 "Building a production-grade personal portfolio (Task 1).",
                 "Working with React, TypeScript, and modern UI patterns.",
-                "Practicing Git workflows and deploying to Vercel / Render.",
+                "Practicing Git workflows and deploying to Render.",
               ]}
             />
             <TimelineCard
-              title="Achievements & Certifications"
-              org="Self-paced learning"
-              date="Ongoing"
+              title="PCAP Certified Associate Python Programmer"
+              org="Python Institute"
+              date="March 31, 2026"
               points={[
-                "Completed full stack web development coursework.",
-                "Built 6+ projects spanning frontend, backend and AI.",
-                "Active open-source contributor on GitHub.",
+                "Earned PCAP-31-03 certification in General-Purpose Programming.",
+                "Recognized for proficiency in Python fundamentals and programming concepts.",
+                "Validated skills in data handling, control flow, and object-oriented programming.",
               ]}
             />
+            <Dialog>
+              <DialogTrigger asChild>
+                <button className="w-full text-left reveal rounded-xl bg-white border border-border p-6 shadow-soft hover:shadow-card transition">
+                  <div className="flex flex-wrap justify-between items-start gap-2">
+                    <div>
+                      <h3 className="font-semibold">Salesforce Certified Agentforce Specialist</h3>
+                      <p className="text-sm text-primary">Salesforce</p>
+                    </div>
+                    <span className="text-xs text-muted-foreground bg-surface px-2.5 py-1 rounded-full border border-border">December 29, 2025</span>
+                  </div>
+                  <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
+                    <li className="flex"><span className="h-1.5 w-1.5 rounded-full bg-primary mt-2 mr-2.5 shrink-0" />Completed Salesforce Agentforce Specialist certification requirements.</li>
+                    <li className="flex"><span className="h-1.5 w-1.5 rounded-full bg-primary mt-2 mr-2.5 shrink-0" />Demonstrated understanding of Salesforce Agentforce tools and best practices.</li>
+                    <li className="flex"><span className="h-1.5 w-1.5 rounded-full bg-primary mt-2 mr-2.5 shrink-0" />Certified through Salesforce Trailhead credential verification.</li>
+                  </ul>
+                </button>
+              </DialogTrigger>
+              <DialogContent className="max-w-2xl">
+                <DialogHeader>
+                  <DialogTitle>Download Original Certificate</DialogTitle>
+                  <DialogDescription>Use the button below to download the original certificate file directly.</DialogDescription>
+                </DialogHeader>
+                <div className="mt-6 rounded-xl border border-border bg-surface p-6 text-sm text-muted-foreground">
+                  The certificate file is only available as a direct download. No preview image is displayed here.
+                </div>
+                <DialogFooter>
+                  <a
+                    href="/salesforce-agentforce-specialist.pdf"
+                    download="Salesforce-Agentforce-Specialist.pdf"
+                    className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition"
+                  >
+                    Download Certificate
+                  </a>
+                  <DialogClose className="inline-flex items-center justify-center rounded-md border border-border bg-white px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-surface transition">
+                    Close
+                  </DialogClose>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+            <Dialog>
+              <DialogTrigger asChild>
+                <button className="w-full text-left reveal rounded-xl bg-white border border-border p-6 shadow-soft hover:shadow-card transition">
+                  <div className="flex flex-wrap justify-between items-start gap-2">
+                    <div>
+                      <h3 className="font-semibold">Certified Advanced Automation Professional</h3>
+                      <p className="text-sm text-primary">Automation Anywhere</p>
+                    </div>
+                    <span className="text-xs text-muted-foreground bg-surface px-2.5 py-1 rounded-full border border-border">December 26, 2025</span>
+                  </div>
+                  <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
+                    <li className="flex"><span className="h-1.5 w-1.5 rounded-full bg-primary mt-2 mr-2.5 shrink-0" />Earned Advanced Automation Professional certification from Automation Anywhere.</li>
+                    <li className="flex"><span className="h-1.5 w-1.5 rounded-full bg-primary mt-2 mr-2.5 shrink-0" />Demonstrated advanced RPA and automation development skills.</li>
+                    <li className="flex"><span className="h-1.5 w-1.5 rounded-full bg-primary mt-2 mr-2.5 shrink-0" />Validated through Automation Anywhere certification credentialing.</li>
+                  </ul>
+                </button>
+              </DialogTrigger>
+              <DialogContent className="max-w-2xl">
+                <DialogHeader>
+                  <DialogTitle>Download Original Certificate</DialogTitle>
+                  <DialogDescription>Use the button below to download the original certificate file directly.</DialogDescription>
+                </DialogHeader>
+                <div className="mt-6 rounded-xl border border-border bg-surface p-6 text-sm text-muted-foreground">
+                  The certificate file is only available as a direct download. No preview image is displayed here.
+                </div>
+                <DialogFooter>
+                  <a
+                    href="/automation-anywhere-advanced-automation-professional.pdf"
+                    download="Automation-Anywhere-Advanced-Automation-Professional.pdf"
+                    className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition"
+                  >
+                    Download Certificate
+                  </a>
+                  <DialogClose className="inline-flex items-center justify-center rounded-md border border-border bg-white px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-surface transition">
+                    Close
+                  </DialogClose>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
       </section>
@@ -384,12 +661,12 @@ function Portfolio() {
               <h3 className="font-semibold mb-4">Education</h3>
               <ul className="space-y-4 text-sm">
                 <li>
-                  <p className="font-medium">B.Tech, Computer Science</p>
-                  <p className="text-muted-foreground">2023 — Present</p>
+                  <p className="font-medium">B.Tech, Computer Science | K L H University</p>
+                  <p className="text-muted-foreground">2024 — 2028</p>
                 </li>
                 <li>
-                  <p className="font-medium">Higher Secondary</p>
-                  <p className="text-muted-foreground">Completed</p>
+                  <p className="font-medium">Higher Secondary | Sri Chaitanya Junior College</p>
+                  <p className="text-muted-foreground">2022 — 2024 </p>
                 </li>
               </ul>
             </div>
@@ -417,9 +694,9 @@ function Portfolio() {
               Have an opportunity, project idea, or just want to say hi? Send a message and I'll get back to you.
             </p>
             <div className="mt-8 space-y-3 text-sm">
-              <p><span className="text-muted-foreground">Email: </span><a className="hover:text-primary" href="mailto:vishnu@example.com">vishnu@example.com</a></p>
-              <p><span className="text-muted-foreground">GitHub: </span><a className="hover:text-primary" target="_blank" rel="noreferrer" href={`https://github.com/${GITHUB_USER}`}>@{GITHUB_USER}</a></p>
-              <p><span className="text-muted-foreground">LinkedIn: </span><a className="hover:text-primary" target="_blank" rel="noreferrer" href="https://www.linkedin.com/">vishnu-chethanaj</a></p>
+              <p className="flex items-center gap-2"><Mail className="h-4 w-4 text-muted-foreground" /><a className="inline-flex items-center gap-2 hover:text-primary" href="mailto:vishnuchethana.j@gmail.com">vishnuchethana.j@gmail.com</a></p>
+              <p className="flex items-center gap-2"><Github className="h-4 w-4 text-muted-foreground" /><a className="inline-flex items-center gap-2 hover:text-primary" target="_blank" rel="noreferrer" href="https://github.com/vishnuchethanaj">GitHub</a></p>
+              <p className="flex items-center gap-2"><Linkedin className="h-4 w-4 text-muted-foreground" /><a className="inline-flex items-center gap-2 hover:text-primary" target="_blank" rel="noreferrer" href="https://www.linkedin.com/in/vishnuchethanajogiparthi/">LinkedIn</a></p>
             </div>
           </div>
           <form onSubmit={submit} className="reveal rounded-xl bg-white border border-border p-6 shadow-soft space-y-4">
@@ -447,11 +724,11 @@ function Portfolio() {
       {/* FOOTER */}
       <footer className="py-10 bg-white">
         <div className="container-x flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
-          <p>© 2026 Vishnu Chethanaj. All rights reserved.</p>
+          <p>© VishnuChethanaj. All rights reserved.</p>
           <div className="flex gap-6">
-            <a href={`https://github.com/${GITHUB_USER}`} target="_blank" rel="noreferrer" className="hover:text-primary">GitHub</a>
-            <a href="https://www.linkedin.com/" target="_blank" rel="noreferrer" className="hover:text-primary">LinkedIn</a>
-            <a href="mailto:vishnu@example.com" className="hover:text-primary">Email</a>
+            <a href="https://github.com/vishnuchethanaj" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 hover:text-primary"><Github className="h-4 w-4" />GitHub</a>
+            <a href="https://www.linkedin.com/in/vishnuchethanajogiparthi/" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 hover:text-primary"><Linkedin className="h-4 w-4" />LinkedIn</a>
+            <a href="mailto:vishnuchethana.j@gmail.com" className="inline-flex items-center gap-2 hover:text-primary"><Mail className="h-4 w-4" />Email</a>
           </div>
         </div>
       </footer>
