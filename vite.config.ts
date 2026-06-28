@@ -14,7 +14,9 @@ export default defineConfig({
   },
   logLevel: "error",
   clearScreen: false,
-  preview: {
-    allowedHosts: "all",
+  vite: {
+    preview: {
+      allowedHosts: "all",
+    },
   },
 });
