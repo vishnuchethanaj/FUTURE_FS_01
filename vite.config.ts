@@ -12,11 +12,15 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
-  logLevel: "error",
-  clearScreen: false,
   vite: {
-    preview: {
-      allowedHosts: "all",
+    server: {
+      host: "0.0.0.0",
     },
+    preview: {
+      host: "0.0.0.0",
+      allowedHosts: ["future-fs-01-qwji.onrender.com"],
+    },
+    logLevel: "error",
+    clearScreen: false,
   },
 });
