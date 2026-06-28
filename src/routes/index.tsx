@@ -182,22 +182,39 @@ function Portfolio() {
     return () => { cancelled = true; };
   }, []);
 
-  // Typing animation
+  // Typing animation for hero phrases
   useEffect(() => {
-    const phrases = ["Full Stack Web Developer", "React & Node.js Enthusiast", "Problem Solver", "AI Explorer"];
-    let p = 0, c = 0, deleting = false, timer: number;
+    const phrases = ["Full Stack Web Developer", "Problem Solver", "AI Explorer"];
+    let phraseIndex = 0;
+    let charIndex = 0;
+    let deleting = false;
+    let timer: number | undefined;
+
     const tick = () => {
-      const el = typedRef.current; if (!el) return;
-      const word = phrases[p];
-      c += deleting ? -1 : 1;
-      el.textContent = word.slice(0, c);
-      let delay = deleting ? 40 : 90;
-      if (!deleting && c === word.length) { delay = 1400; deleting = true; }
-      else if (deleting && c === 0) { deleting = false; p = (p + 1) % phrases.length; delay = 300; }
-      timer = window.setTimeout(tick, delay);
+      const el = typedRef.current;
+      if (!el) return;
+      const current = phrases[phraseIndex];
+      if (!deleting) {
+        charIndex++;
+        el.textContent = current.slice(0, charIndex);
+        if (charIndex === current.length) {
+          deleting = true;
+          timer = window.setTimeout(tick, 1200);
+          return;
+        }
+      } else {
+        charIndex--;
+        el.textContent = current.slice(0, charIndex);
+        if (charIndex === 0) {
+          deleting = false;
+          phraseIndex = (phraseIndex + 1) % phrases.length;
+        }
+      }
+      timer = window.setTimeout(tick, deleting ? 40 : 90);
     };
+
     timer = window.setTimeout(tick, 400);
-    return () => window.clearTimeout(timer);
+    return () => { if (timer) window.clearTimeout(timer); };
   }, []);
 
   // Active section + back-to-top + reveal
@@ -220,7 +237,7 @@ function Portfolio() {
     document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
 
     return () => { window.removeEventListener("scroll", onScroll); io.disconnect(); };
-  }, [repos]);
+  }, [repos, filter]);
 
   const skills = useMemo(() => {
     const langs = new Set<string>();
@@ -528,10 +545,10 @@ modern user experiences, and real-world projects.
                 <div className="mt-5 flex gap-2">
                   <a href={r.html_url} target="_blank" rel="noreferrer"
                     className="flex-1 text-center text-sm px-3 py-2 rounded-md border border-border hover:bg-accent transition">GitHub</a>
-                  <a href={LINKEDIN_URL} target="_blank" rel="noreferrer"
-                    className="flex-1 text-center text-sm px-3 py-2 rounded-md border border-border hover:bg-accent transition">LinkedIn</a>
-                  <a href={`mailto:${EMAIL}?subject=${encodeURIComponent(`About ${r.name}`)}`}
-                    className="flex-1 text-center text-sm px-3 py-2 rounded-md border border-border hover:bg-accent transition">Email</a>
+                  {r.homepage && (
+                    <a href={r.homepage} target="_blank" rel="noreferrer"
+                      className="flex-1 text-center text-sm px-3 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition">Live Demo</a>
+                  )}
                 </div>
               </article>
             ))}
