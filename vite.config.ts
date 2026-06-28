@@ -12,4 +12,9 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  logLevel: "error",
+  clearScreen: false,
+  preview: {
+    allowedHosts: "all",
+  },
 });
